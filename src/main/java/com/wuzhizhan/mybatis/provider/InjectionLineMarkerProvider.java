@@ -4,6 +4,7 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.wuzhizhan.mybatis.annotation.Annotation;
@@ -11,7 +12,6 @@ import com.wuzhizhan.mybatis.dom.model.Mapper;
 import com.wuzhizhan.mybatis.util.Icons;
 import com.wuzhizhan.mybatis.util.JavaUtils;
 import com.wuzhizhan.mybatis.util.MapperUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -54,7 +54,7 @@ public class InjectionLineMarkerProvider extends RelatedItemLineMarkerProvider {
         if (resourceAnno.isPresent()) {
             PsiAnnotationMemberValue nameValue = resourceAnno.get().findAttributeValue("name");
             String name = nameValue.getText().replaceAll("\"", "");
-            return StringUtils.isBlank(name) || name.equals(field.getName());
+            return StringUtil.isEmptyOrSpaces(name) || name.equals(field.getName());
         }
         return false;
     }

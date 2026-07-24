@@ -1,14 +1,14 @@
 package com.wuzhizhan.mybatis.util;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PropertyUtil;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import com.wuzhizhan.mybatis.annotation.Annotation;
 import com.wuzhizhan.mybatis.dom.model.IdDomElement;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,13 +73,13 @@ public final class JavaUtils {
 
     @NotNull
     public static Optional<PsiMethod> findMethod(@NotNull Project project, @Nullable String clazzName, @Nullable String methodName) {
-        if (StringUtils.isBlank(clazzName) && StringUtils.isBlank(methodName)) {
+        if (StringUtil.isEmptyOrSpaces(clazzName) && StringUtil.isEmptyOrSpaces(methodName)) {
             return Optional.empty();
         }
         Optional<PsiClass> clazz = findClazz(project, clazzName);
         if (clazz.isPresent()) {
             PsiMethod[] methods = clazz.get().findMethodsByName(methodName, true);
-            return ArrayUtils.isEmpty(methods) ? Optional.empty() : Optional.of(methods[0]);
+            return ArrayUtil.isEmpty(methods) ? Optional.empty() : Optional.of(methods[0]);
         }
         return Optional.empty();
     }
