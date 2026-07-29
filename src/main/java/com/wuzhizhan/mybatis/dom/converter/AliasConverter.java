@@ -1,9 +1,11 @@
 package com.wuzhizhan.mybatis.dom.converter;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.impl.source.resolve.reference.impl.providers.JavaClassReferenceProvider;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlAttributeValue;
 import com.intellij.util.xml.*;
@@ -19,8 +21,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class AliasConverter extends ConverterAdaptor<PsiClass> implements CustomReferenceConverter<PsiClass> {
 
-    private PsiClassConverter delegate = new PsiClassConverter();
-
     @Nullable
     @Override
     public PsiClass fromString(@Nullable @NonNls String s, ConvertContext context) {
@@ -34,14 +34,21 @@ public class AliasConverter extends ConverterAdaptor<PsiClass> implements Custom
     @Nullable
     @Override
     public String toString(@Nullable PsiClass psiClass, ConvertContext context) {
-        return delegate.toString(psiClass, context);
+        return psiClass == null ? null : psiClass.getQualifiedName();
     }
 
     @NotNull
     @Override
     public PsiReference[] createReferences(GenericDomValue<PsiClass> value, PsiElement element, ConvertContext context) {
         if (((XmlAttributeValue) element).getValue().contains(MybatisConstants.DOT_SEPARATOR)) {
-            return delegate.createReferences(value, element, context);
+            JavaClassReferenceProvider provider = new JavaClassReferenceProvider() {
+                @Override
+                public GlobalSearchScope getScope(Project project) {
+                    return context.getSearchScope();
+                }
+            };
+            provider.setSoft(true);
+            return provider.getReferencesByElement(element);
         } else {
             return new PsiReference[]{new AliasClassReference((XmlAttributeValue) element)};
         }

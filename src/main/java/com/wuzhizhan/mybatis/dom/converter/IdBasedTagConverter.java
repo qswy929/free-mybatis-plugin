@@ -120,7 +120,9 @@ public abstract class IdBasedTagConverter extends ConverterAdaptor<XmlAttributeV
     @NotNull
     @Override
     public PsiReference[] createReferences(GenericDomValue<XmlAttributeValue> value, PsiElement element, ConvertContext context) {
-        return PsiClassConverter.createJavaClassReferenceProvider(value, null, new ValueReferenceProvider(context)).getReferencesByElement(element);
+        ValueReferenceProvider provider = new ValueReferenceProvider(context);
+        provider.setSoft(true);
+        return provider.getReferencesByElement(element);
     }
 
     private class ValueReferenceProvider extends JavaClassReferenceProvider {
