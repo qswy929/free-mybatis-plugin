@@ -1,5 +1,6 @@
 package com.wuzhizhan.mybatis.reference;
 
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -34,6 +35,9 @@ public class ContextPsiFieldReference extends PsiReferenceBase<XmlAttributeValue
     @Nullable
     @Override
     public PsiElement resolve() {
+        if (DumbService.isDumb(getElement().getProject())) {
+            return null;
+        }
         Optional<PsiElement> resolved = resolver.resolve(index);
         return resolved.orElse(null);
     }
@@ -41,6 +45,9 @@ public class ContextPsiFieldReference extends PsiReferenceBase<XmlAttributeValue
     @NotNull
     @Override
     public Object[] getVariants() {
+        if (DumbService.isDumb(getElement().getProject())) {
+            return PsiReference.EMPTY_ARRAY;
+        }
         Optional<PsiClass> clazz = getTargetClazz();
         return clazz.isPresent() ? JavaUtils.findSettablePsiFields(clazz.get()) : PsiReference.EMPTY_ARRAY;
     }

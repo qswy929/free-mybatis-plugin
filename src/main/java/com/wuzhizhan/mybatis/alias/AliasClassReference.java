@@ -2,7 +2,9 @@ package com.wuzhizhan.mybatis.alias;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.xml.XmlAttributeValue;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +31,9 @@ public class AliasClassReference extends PsiReferenceBase<XmlAttributeValue> {
     @Nullable
     @Override
     public PsiElement resolve() {
+        if (DumbService.isDumb(getElement().getProject())) {
+            return null;
+        }
         XmlAttributeValue attributeValue = getElement();
         return AliasFacade.getInstance(attributeValue.getProject()).findPsiClass(attributeValue, attributeValue.getValue()).orElse(null);
     }
@@ -36,6 +41,9 @@ public class AliasClassReference extends PsiReferenceBase<XmlAttributeValue> {
     @NotNull
     @Override
     public Object[] getVariants() {
+        if (DumbService.isDumb(getElement().getProject())) {
+            return PsiReference.EMPTY_ARRAY;
+        }
         AliasFacade aliasFacade = AliasFacade.getInstance(getElement().getProject());
         Collection<String> result = Collections2.transform(aliasFacade.getAliasDescs(getElement()), function);
         return result.toArray(new String[result.size()]);

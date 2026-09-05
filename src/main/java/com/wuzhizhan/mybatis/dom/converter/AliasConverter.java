@@ -1,5 +1,6 @@
 package com.wuzhizhan.mybatis.dom.converter;
 
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
@@ -25,6 +26,7 @@ public class AliasConverter extends ConverterAdaptor<PsiClass> implements Custom
     @Override
     public PsiClass fromString(@Nullable @NonNls String s, ConvertContext context) {
         if (StringUtil.isEmptyOrSpaces(s)) return null;
+        if (DumbService.isDumb(context.getProject())) return null;
         if (!s.contains(MybatisConstants.DOT_SEPARATOR)) {
             return AliasFacade.getInstance(context.getProject()).findPsiClass(context.getXmlElement(), s).orElse(null);
         }

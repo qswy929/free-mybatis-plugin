@@ -2,6 +2,7 @@ package com.wuzhizhan.mybatis.alias;
 
 import com.google.common.collect.Lists;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +53,9 @@ public class AliasFacade {
 
     @NotNull
     public Optional<PsiClass> findPsiClass(@Nullable PsiElement element, @NotNull String shortName) {
+        if (DumbService.isDumb(project)) {
+            return Optional.empty();
+        }
         PsiClass clazz = javaPsiFacade.findClass(shortName, GlobalSearchScope.allScope(project));
         if (null != clazz) {
             return Optional.of(clazz);
@@ -67,6 +72,9 @@ public class AliasFacade {
 
     @NotNull
     public Collection<AliasDesc> getAliasDescs(@Nullable PsiElement element) {
+        if (DumbService.isDumb(project)) {
+            return Collections.emptyList();
+        }
         ArrayList<AliasDesc> result = Lists.newArrayList();
         for (AliasResolver resolver : resolvers) {
             result.addAll(resolver.getClassAliasDescriptions(element));
